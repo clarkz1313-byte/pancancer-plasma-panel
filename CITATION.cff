@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated manuscript."
+title: "Analysis code: A 25-protein plasma panel discriminates 12 cancer types, and a paired disease-specific panel set confirms them"
+authors:
+  - family-names: "Le"
+    given-names: "Duy"
+repository-code: "https://github.com/clarkz1313-byte/pancancer-plasma-panel"
+license: MIT
+type: software
