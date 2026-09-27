@@ -68,9 +68,11 @@ cross-validated composite objective, size fixed at 25. Final model:
 class-balanced L2-penalised multinomial logistic regression (C=0.1, lbfgs).
 Bootstrap seed 52024, 1,000 resamples.
 
-**External refit**: marker membership frozen, L2-logistic model (C=1.0,
-lbfgs) refit within each cohort over 50 repeated participant-grouped 75/25
-splits.
+**External refit**: marker membership frozen, L2-logistic model fitted by the
+included production script with penalty coefficient 1.0 and fixed-step gradient
+descent (step size 0.05, 2,500 steps) over 50 repeated participant-grouped
+75/25 splits. The scikit-learn `C=1.0, lbfgs` variant is an estimator
+sensitivity analysis, not the source of the reported external counts.
 
 **Colocalisation**: approximate Bayes factors at 250 kb / 500 kb windows,
 cross-trait prior swept across 1e-5, 1e-6, 1e-7; promotion at 1e-5. SMR/HEIDI

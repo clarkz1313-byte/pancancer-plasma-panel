@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite this archived code release and the associated manuscript when available."
 title: "Pan-cancer plasma protein panel analysis code"
-version: 1.0.0
+version: 1.0.1
 abstract: "Analysis code for a 25-protein multiclass plasma panel and 12 disease-specific marker sets across 12 cancer types."
 authors:
   - family-names: "Le"

@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 REVISE_ROOT = ROOT / "revise_plan"
 PART_A_SINGLE_ROOT = REVISE_ROOT / "part_a_single"
 PART_A_PAN_ROOT = REVISE_ROOT / "part_a_pan_cancer"
-SOURCE_INPUT = ROOT / "data" / "processed" / "filtered_pancancer_data.csv"
+SOURCE_INPUT = ROOT / "data" / "filtered_pancancer_data.csv"
 PIPELINE_SCRIPTS = ROOT / "scripts"
 if str(PIPELINE_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(PIPELINE_SCRIPTS))

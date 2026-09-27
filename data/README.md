@@ -7,16 +7,19 @@
 `protein_count`.
 
 ```
-SHA-256: 7825207BD0502EB7C8C414E980DD9F015A96E9001491F1C500C417A819AA252F
+SHA-256 (release archive and Git blob): 881893A5010F5B9CD462DF76F6671BC9060EFDEAFD81105BA52BBAD077C3D41E
 ```
 
-Verify before running anything:
+Verify the bytes extracted from the Zenodo or GitHub release archive before
+running anything:
 
 ```powershell
 Get-FileHash .\data\filtered_pancancer_data.csv -Algorithm SHA256
 ```
 
-Do not reorder rows, rename columns, or change missing-value encoding —
+The repository's `.gitattributes` keeps this CSV's line endings as LF on all
+systems, so a checkout and the release archive have the same checksum. Do not
+reorder rows, rename columns, or change missing-value encoding —
 several analysis scripts assume this exact layout.
 
 ## Provenance and licence
@@ -43,7 +46,7 @@ own licence and access route.
 | AML, CLL | GSE13159 | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE13159) |
 | BRC | GSE42568 | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE42568) |
 | CRC | GSE41258 | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE41258) |
-| CVX | GSE9750, GSE63514 | [GEO](https://www.ncbi.nlm.nih.gov/geo/) |
+| CVX | GSE9750 (primary); GSE63514 (substitution sensitivity analysis) | [GEO](https://www.ncbi.nlm.nih.gov/geo/) |
 | ENDC | GSE17025 | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE17025) |
 | GLIOM | GSE4290 | [GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE4290) |
 | LUNGC | CPTAC–ICPC LUAD | [PDC](https://proteomic.datacommons.cancer.gov/) |

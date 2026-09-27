@@ -6,3 +6,6 @@ r_libs/
 *.Rhistory
 .DS_Store
 Thumbs.db
+revise_plan/
+figures/
+result12classes/

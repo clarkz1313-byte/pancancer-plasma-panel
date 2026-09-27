@@ -1,54 +1,14 @@
 #!/usr/bin/env python3
-"""Generic locked-panel validation for external sample-level matrices —
-scikit-learn variant.
+"""Generic locked-panel validation for external sample-level matrices.
 
-This is a MINIMAL-DIFF fork of `generic_locked_panel_external_validation.py`
-(the production script every canonical external row was generated with).
-Every line of preprocessing, splitting, thresholding, and output-file schema
-is unchanged; the only edits are:
-
-  1. `fit_logistic()` (hand-written L2 gradient descent) is replaced by
-     `sklearn.linear_model.LogisticRegression(C=1.0, solver="lbfgs",
-     max_iter=5000, penalty="l2")` — the same estimator family and
-     regularisation strength the INTERNAL pipeline uses (`LR-L2 C=1.0
-     lbfgs`), so the internal and external arms now share one estimator.
-  2. `auc_score()` (hand-rolled Mann-Whitney statistic) is replaced by
-     `sklearn.metrics.roc_auc_score`.
-
-Nothing else changed: same CLI, same grouped-split protocol (50 repeats,
-75/25, participant-grouped), same median-impute + z-standardise fitted on
-the train fold only, same 0.50/0.80 thresholding, same output file names
-and columns. Output is written to a SEPARATE `--out-dir` so it never
-overwrites the production run's canonical files.
-
-Why this script exists
------------------------
-Not because the hand-written estimator was found to be wrong — it wasn't.
-`estimator_sensitivity_sklearn_vs_handrolled.py` and
-`estimator_sensitivity_component_metrics.py` ran both estimators on
-IDENTICAL splits for all 24 canonical rows and found:
-
-    macro AUC        Part A -0.0000, Part B -0.0010
-    sensitivity       mean |delta| 0.003, max 0.024 (A/AML)
-    specificity        mean |delta| 0.005, max 0.044 (B/GLIOM)
-    cohort rankings   weakest/strongest unchanged in both parts
-    coefficient cosine similarity  0.9969
-
-Every specificity swing traces to exactly one flipped participant at the
-fixed threshold (verified against each row's n_control) -- discreteness
-noise, not a systematic shift. See
-`estimator_sensitivity_component_metrics.csv` for the full per-row audit.
-
-This script is kept as a validated drop-in alternative: if a reviewer
-specifically wants the external refit to use a standard library estimator,
-this can regenerate any cohort's row with one command and the same CLI as
-production, and the result is known in advance to agree with the reported
-numbers to within noise.
-
-Input requirements (unchanged from production):
+Input requirements:
 - matrix CSV/TSV with one row per sample.
 - metadata CSV/TSV with sample_id and binary label columns.
 - feature columns named by gene/protein symbols.
+
+This is intended for external datasets once their processed sample-level matrix
+has been downloaded from the original source. It avoids sklearn/scipy and writes
+coverage, metrics, predictions, univariate AUC, and permutation diagnostics.
 """
 
 from __future__ import annotations
@@ -58,8 +18,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_auc_score
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -82,16 +40,16 @@ def load_panel(path: Path, panel_name: str) -> list[str]:
 
 
 def auc_score(y: np.ndarray, score: np.ndarray) -> float:
-    """scikit-learn AUC. Replaces the hand-rolled Mann-Whitney statistic.
-    (Verified elsewhere to agree with it to machine precision on real
-    scores; this is a swap of implementation, not of definition.)"""
-    if len(np.unique(y)) < 2:
+    pos = score[y == 1]
+    neg = score[y == 0]
+    if len(pos) == 0 or len(neg) == 0:
         return float("nan")
-    return float(roc_auc_score(y, score))
+    greater = (pos[:, None] > neg[None, :]).sum()
+    ties = (pos[:, None] == neg[None, :]).sum()
+    return float((greater + 0.5 * ties) / (len(pos) * len(neg)))
 
 
 def impute_standardize(x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    # unchanged from production -- isolates the comparison to the estimator only
     med = np.nanmedian(x, axis=0)
     med = np.where(np.isfinite(med), med, 0.0)
     x = x.copy()
@@ -103,18 +61,20 @@ def impute_standardize(x: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarra
     return (x - mean) / std, med, mean, std
 
 
-def fit_logistic(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, float]:
-    """scikit-learn LogisticRegression, matching the internal pipeline's
-    configuration (LR-L2 C=1.0 lbfgs). Replaces the hand-written gradient
-    descent. Returns (coef, intercept) in the same shape the caller expects,
-    so downstream scoring code is untouched."""
-    clf = LogisticRegression(C=1.0, solver="lbfgs", max_iter=5000, penalty="l2")
-    clf.fit(x, y)
-    return clf.coef_.ravel(), float(clf.intercept_[0])
+def fit_logistic(x: np.ndarray, y: np.ndarray, l2: float = 1.0, lr: float = 0.05, steps: int = 2500) -> tuple[np.ndarray, float]:
+    coef = np.zeros(x.shape[1])
+    intercept = 0.0
+    y = y.astype(float)
+    for _ in range(steps):
+        logits = np.clip(x @ coef + intercept, -35, 35)
+        pred = 1.0 / (1.0 + np.exp(-logits))
+        err = pred - y
+        coef -= lr * ((x.T @ err / len(y)) + (l2 * coef / len(y)))
+        intercept -= lr * float(err.mean())
+    return coef, intercept
 
 
 def grouped_splits(y: np.ndarray, groups: np.ndarray, repeats: int, test_fraction: float, seed: int):
-    # unchanged from production
     rng = np.random.default_rng(seed)
     unique_groups = np.array(list(dict.fromkeys(groups)))
     indices = np.arange(len(y))
@@ -141,7 +101,6 @@ def run_model(
     repeats: int,
     prefix: str | None = "locked25_grouped",
 ) -> pd.DataFrame:
-    # unchanged from production except coef,intercept now come from sklearn
     y = matrix["label"].to_numpy(dtype=int)
     groups = matrix["group"].astype(str).to_numpy()
     x_raw = matrix[feature_cols].to_numpy(dtype=float)

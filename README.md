@@ -4,7 +4,6 @@ Code and data release for:
 
 > **A 25-protein plasma panel discriminates 12 cancer types with complementary
 > disease-specific marker sets.**
-> Manuscript in preparation for *The FASEB Journal*.
 
 Assigning which cancer a patient has is a different problem from detecting
 that a cancer is present. This project asks how small a plasma protein panel
@@ -20,21 +19,18 @@ external datasets (macro AUC 0.963 and 0.946 respectively). Pathway, protein–p
 interaction, and pQTL–GWAS analyses then ask whether panel membership carries
 biological structure beyond the statistics that selected it.
 
-This repository holds the analysis code, the processed discovery-cohort
-matrix, and the documentation needed to run it. It does not include the
-manuscript text or high-resolution figures — those stay with the authors
-until the paper is accepted.
-
-Some legacy analysis scripts retain paths from the original project directory.
-Set those paths and obtain the external inputs listed in `data/README.md` before
-rerunning those workflows. The Figure 6 rebuild command below uses paths
-relative to this repository.
+This repository holds the analysis code and processed discovery-cohort matrix.
+The internal locked model and disease-specific Figure 6 can be rebuilt from
+this archive. External cohort and genetic analyses require the source datasets
+listed in `data/README.md`; several additional figure builders require
+intermediate result tables from the original analysis directory.
 
 ## Citation
 
-The citation metadata for this software is in `CITATION.cff`. Once a versioned
-Zenodo archive is available, cite that release DOI for the code snapshot and
-the associated manuscript separately when it is published.
+The citation metadata for this software is in `CITATION.cff`. Cite the
+version-specific Zenodo DOI for the code snapshot and the associated manuscript
+separately when it is published. The first archived release, `v1.0.0`, is
+[doi:10.5281/zenodo.22986391](https://doi.org/10.5281/zenodo.22986391).
 
 ## Repository layout
 
@@ -69,8 +65,9 @@ install.packages(c("rlang", "coloc", "TwoSampleMR", "ieugwasr", "susieR",
                   lib = "r_libs")
 ```
 
-Scripts in `src/genetics/` set `.libPaths()` to this folder themselves, so no
-further configuration is needed. External binaries:
+Several genetics scripts retain absolute paths from the original analysis
+directory. Set those paths and the local R library for your environment before
+running them. External binaries:
 [SMR 1.3.1](https://yanglab.westlake.edu.cn/software/smr/) and
 [PLINK 2](https://www.cog-genomics.org/plink/2.0/).
 
@@ -79,9 +76,22 @@ Full pinned versions for both languages: `docs/ENVIRONMENT.md`.
 ## Data
 
 `data/filtered_pancancer_data.csv` (15 MB, checksummed) is the discovery
-cohort. External validation cohorts, GWAS summary statistics, pQTLs, and
-pathway/interaction resources are public but not redistributed here — see
-`data/README.md` for accessions and download links.
+cohort. External validation cohorts, GWAS summary statistics, and pathway
+resources are available separately; UKB-PPP pQTL data require approved access.
+See `data/README.md` for accessions and links.
+
+## Reproduction scope
+
+| Analysis | What is in this archive | Reviewer action |
+|---|---|---|
+| Locked 25-protein model | Discovery matrix and reproducer | Run the second command below; it checks the selected proteins and held-out metrics. |
+| Disease-specific models and Figure 6 | Discovery matrix, panel membership, Table S9 counts, figure source | Run the Figure 6 command below to check all 12 matrices and recreate the manuscript bitmap. The panel-search command is also below. |
+| External marker-set refits | Marker membership and original refit script | Obtain and process each public tissue dataset in `data/README.md`, then supply sample-by-feature and metadata tables to `src/external/generic_locked_panel_external_validation.py`. The archive does not contain those processed matrices. |
+| Genetic and functional analyses | Analysis scripts and source identifiers | Obtain the stated pQTL, GWAS, LD, and annotation resources; UKB-PPP requires approved access. Some scripts need original project paths changed. |
+| Other manuscript figures | Figure-generation scripts | Several builders expect intermediate result tables that are not included in this archive. |
+
+See `docs/SCRIPT_INDEX.md` for the primary entry points and the status of
+figure builders in this release.
 
 ## Running the pipeline
 
@@ -96,6 +106,12 @@ python src/panels/02_may_vRSX_seed52_locked_25_lr_l2_reproducer.py
 Reproduction follows the tolerance in `docs/ENVIRONMENT.md`: exact matches
 for feature selections, partitions, and discrete predictions; agreement
 within 1e-6 for continuous metrics, given the pinned environment there.
+
+The `--panel-name` option on the external refit script selects
+`multiclass_25` or a `single_<CANCER>` set from
+`data/panel_memberships.csv`. Use the production script for the reported
+external endpoints; the `_sklearn.py` script is an estimator sensitivity
+analysis and can give different fixed-threshold calls.
 
 ### Disease-specific held-out figure
 
