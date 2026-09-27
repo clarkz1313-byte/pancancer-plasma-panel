@@ -2,8 +2,8 @@
 
 Code and data release for:
 
-> **A 25-protein plasma panel discriminates 12 cancer types, and a paired
-> disease-specific panel set confirms them.**
+> **A 25-protein plasma panel discriminates 12 cancer types with complementary
+> disease-specific marker sets.**
 > Manuscript in preparation for *The FASEB Journal*.
 
 Assigning which cancer a patient has is a different problem from detecting
@@ -15,8 +15,8 @@ cancers. A staged search over 3,000 candidate panels returned a locked
 0.619 on held-out patients); 12 one-vs-rest workflows separately returned
 **disease-specific panels** of 2–13 proteins each (mean specificity 0.985 at a
 fixed threshold). With marker membership frozen and coefficients refitted per
-cohort, both panels retained discrimination in 12 independent external
-cohorts (macro AUC 0.963 and 0.946 respectively). Pathway, protein–protein
+cohort, both panels retained discrimination across 12 endpoints from 11
+external datasets (macro AUC 0.963 and 0.946 respectively). Pathway, protein–protein
 interaction, and pQTL–GWAS analyses then ask whether panel membership carries
 biological structure beyond the statistics that selected it.
 
@@ -25,11 +25,16 @@ matrix, and the documentation needed to run it. It does not include the
 manuscript text or high-resolution figures — those stay with the authors
 until the paper is accepted.
 
+Some legacy analysis scripts retain paths from the original project directory.
+Set those paths and obtain the external inputs listed in `data/README.md` before
+rerunning those workflows. The Figure 6 rebuild command below uses paths
+relative to this repository.
+
 ## Citation
 
-A citation entry will be added on submission/acceptance (see `CITATION.cff`).
-If you use this code before then, please cite the repository URL and note
-the manuscript's working title above.
+The citation metadata for this software is in `CITATION.cff`. Once a versioned
+Zenodo archive is available, cite that release DOI for the code snapshot and
+the associated manuscript separately when it is published.
 
 ## Repository layout
 
@@ -91,6 +96,21 @@ python src/panels/02_may_vRSX_seed52_locked_25_lr_l2_reproducer.py
 Reproduction follows the tolerance in `docs/ENVIRONMENT.md`: exact matches
 for feature selections, partitions, and discrete predictions; agreement
 within 1e-6 for continuous metrics, given the pinned environment there.
+
+### Disease-specific held-out figure
+
+The corrected disease-specific figure can be rebuilt from the included
+discovery matrix, frozen panel memberships, and Table S9 audit counts:
+
+```bash
+python src/figures/fig7_table_s9_refit.py
+```
+
+The script checks each of the 12 confusion matrices against
+`data/Table_S9_disease_specific_panel_metrics.csv` and writes
+`figures/fig6_table_s9_refit.png`. It reuses the original three-panel figure
+template with AUC confidence intervals, Wilson intervals for sensitivity and
+specificity, reliability curves, and decision curves.
 
 ## Licence
 
