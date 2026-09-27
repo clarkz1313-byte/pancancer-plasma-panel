@@ -1,4 +1,10 @@
-# Computational environment
+# Reference computational environment
+
+This is the tested setup for rerunning the packaged code. The study's
+analyses and figures were produced across more than one machine. Historical
+Python package builds, BLAS/LAPACK libraries, and thread settings were not
+recorded for every result, so these pins are a reproducibility target rather
+than a certified inventory of every producing machine.
 
 ## Python 3.11.9
 
@@ -19,8 +25,21 @@ Pinned packages (`requirements.txt`):
 | requests | 2.32.5 |
 | tqdm | 4.67.3 |
 
-Also required by figure and enrichment scripts, unpinned:
-`umap-learn`, `optuna`, `gseapy`, `networkx`, `Pillow`, `adjustText`, `plotly`.
+Versions of the ancillary packages in the successful 2026-09-27 audit are in
+`requirements.txt` and `AUDIT_PYTHON_FREEZE_2026-09-27.txt`. Their historical
+versions on other producing machines are not known.
+
+### Tested local rerun, 2026-09-27
+
+- 64-bit CPython 3.11.9 on Windows 11 build 26100, x86-64.
+- NumPy 2.4.3 and SciPy 1.17.1 with OpenBLAS 0.3.31.dev and 0.3.30,
+  respectively; both reported 16 BLAS threads during the audit. The
+  scikit-learn OpenMP runtime reported 16 threads.
+- `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS`, and `MKL_NUM_THREADS` were unset;
+  library defaults applied. This is a record of this audit, not a claim about
+  the historical training machines.
+- The exact installed Python package list is in
+  `AUDIT_PYTHON_FREEZE_2026-09-27.txt`.
 
 ## R 4.4.2
 
@@ -45,6 +64,10 @@ Used by `src/genetics/` only.
 | RColorBrewer | 1.1.3 |
 
 External binaries: SMR 1.3.1, PLINK 2.
+The locus-specific follow-up's recorded software manifest names R 4.4.2,
+coloc 5.2.3, SMR 1.3.1, and PLINK 2.0.0-a.7.4; it is copied to
+`GENETICS_SOFTWARE_MANIFEST.csv`. Its absolute paths record the producing
+machine and must be changed for a new machine.
 
 ## Fixed analysis settings
 
@@ -78,13 +101,27 @@ sensitivity analysis, not the source of the reported external counts.
 cross-trait prior swept across 1e-5, 1e-6, 1e-7; promotion at 1e-5. SMR/HEIDI
 run in both the current 20-variant-capped mode and the uncapped mode.
 
-## Verification
+## Comparing a rerun with the manuscript
 
-- Feature selections, sample partitions, class labels, and discrete
-  predictions: exact match.
-- Continuous metrics: absolute tolerance 1e-6.
-- Values rounded to four decimal places: exact match.
+First fix the code commit, input CSV content and row order, class labels,
+sample grouping, panel membership, split seed, and thresholds. Use seed 52
+for the reported participant partition. Other seeds are useful for split
+sensitivity checks and may yield slightly different estimates. Verify the
+input checksum before running (see `data/README.md`).
 
-Verify the input checksum before running anything (see `data/README.md`).
-Record the Python/R versions, `pip freeze --all`, and BLAS/LAPACK backend
-actually used for any run you intend to compare against the values above.
+The `1e-6` absolute tolerance and four-decimal agreement used in earlier
+internal audits were working comparison criteria for a specified run, not a
+guarantee across machines. Our 2026-09-27 locked-panel and Figure 6 reruns
+passed their code assertions in the tested environment above. Small
+floating-point differences in scores or continuous metrics may occur with a
+different operating system, numerical library, thread count, or package
+build. A changed feature list, split, or integer confusion count needs
+investigation; do not assign it to numerical noise without examining the
+individual scores near the threshold and the run provenance. Figure pixels
+may also vary with fonts and rendering backends.
+
+For a comparison, record the code commit, source-data checksums, Python/R
+versions, full `pip freeze --all` or R `sessionInfo()`, OS and architecture,
+BLAS/LAPACK implementation, and thread settings. Report the observed
+differences in features, splits, predictions, and metrics rather than only
+whether an arbitrary tolerance passed.

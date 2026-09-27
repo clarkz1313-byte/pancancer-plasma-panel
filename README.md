@@ -103,9 +103,10 @@ python src/panels/run_pan_cancer_loop.py --seed 52
 python src/panels/02_may_vRSX_seed52_locked_25_lr_l2_reproducer.py
 ```
 
-Reproduction follows the tolerance in `docs/ENVIRONMENT.md`: exact matches
-for feature selections, partitions, and discrete predictions; agreement
-within 1e-6 for continuous metrics, given the pinned environment there.
+`docs/ENVIRONMENT.md` gives the tested reproduction environment and explains
+how to compare a rerun across machines. Its package pins are a practical
+target, not proof that every historical result used an identical machine or
+library build.
 
 The `--panel-name` option on the external refit script selects
 `multiclass_25` or a `single_<CANCER>` set from
