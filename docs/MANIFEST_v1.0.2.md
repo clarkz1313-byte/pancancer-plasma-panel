@@ -29,9 +29,12 @@ the Supporting Information archive of the manuscript.
 2. **Internal validation.** `B1`, `B3`, `B2`, `B2b` and `B5` in `v7_plan/scripts/`;
    `revise_plan/scripts/92_oct_v65_ds_devonly_downstream_internal_tcga_2026-10-16.py`.
 3. **Single-cancer datasets.** `v7_plan/scripts/B6_single_cancer_external_v7.py`, then `B6b_binary_rule_external_v7.py`.
+   B6 calls the preparation scripts and the refit runner in `revise_plan/external_validation_roadmap/` as
+   subprocesses.
 4. **Pan-cancer datasets.** `revise_plan/scripts/85`, `87`, `89`, `93`; then `v7_plan/scripts/B8b` to `B8g`.
 5. **Biology.** `v7_plan/scripts/B9`, `B9b`, `B9c`, `B9d`, `B9e`.
-6. **Genetics.** `v7_plan/scripts/B10`, `B10b`, then the R scripts `B10c` to `B10k` (needs `SMR_DATA_ROOT`).
+6. **Genetics.** `v7_plan/scripts/B10`, `B10b` (these run the R pipelines in `revise_plan/smr_coloc/`), then the R
+   scripts `B10c` to `B10k` (needs `SMR_DATA_ROOT`).
 7. **Figures and supplement.** The `v7_plan/figures/scripts/` builders listed above, then
    `overleaf-tools/build_supplement_v7.py`.
 
@@ -105,6 +108,29 @@ stages, figure styles); they are shipped so that every import resolves.
 - `make_fig8_v51_external_multiclass.py`
 - `make_fig9_v50_pathway.py`
 
+### `revise_plan/external_validation_roadmap/gse13159_aml/scripts/` (1)
+
+- `prepare_gse13159_aml_transcript_proxy_matrix.py`
+
+### `revise_plan/external_validation_roadmap/gse4290/scripts/` (1)
+
+- `prepare_gse4290_transcript_proxy_matrix.py`
+
+### `revise_plan/external_validation_roadmap/scripts/` (5)
+
+- `generic_locked_panel_external_validation.py`
+- `generic_locked_panel_external_validation_null50.py`
+- `make_single_panel_aux_metadata.py`
+- `prepare_geo_gpl570_panel_proxy.py`
+- `summarize_grouped_prediction_thresholds.py`
+
+### `revise_plan/ppi_string/` (4)
+
+- `batch_string_export.py`
+- `download_STRING_analysis_12_panels.py`
+- `fetch_locked25_string.py`
+- `fetch_pooled12panels_string.py`
+
 ### `revise_plan/scripts/` (36)
 
 - `02_may_v10_seed52_lr_l2_compact_tournament.py`
@@ -143,6 +169,24 @@ stages, figure styles); they are shipped so that every import resolves.
 - `run_dea.py`
 - `run_enrichment.py`
 - `run_pan_feature_multiclass.py`
+
+### `revise_plan/smr_coloc/` (9)
+
+- `v5_run_parta_coloc.R`
+- `v5_run_parta_wald_heidi.R`
+- `v5_run_tier1_combined.R`
+- `v7_run_parta_coloc.R`
+- `v7_run_parta_wald_heidi.R`
+- `v7_run_tier1_combined.R`
+- `v7b_run_parta_coloc.R`
+- `v7b_run_parta_wald_heidi.R`
+- `v7b_run_tier1_combined.R`
+
+### `scripts/` (3)
+
+- `run_12class_ovr_pipeline.py`
+- `run_dea.py`
+- `run_enrichment.py`
 
 ### `v7_plan/figures/scripts/` (28)
 

@@ -1,6 +1,8 @@
 # Computational environment (release v1.0.2)
 
-Versions match Appendix S2 of the Supporting Information.
+Versions match Appendix S2 of the Supporting Information. The analyses were run across more than one machine, and
+BLAS/LAPACK builds and thread settings were not recorded for every result, so these pins are a reproducibility
+target rather than a certified inventory of every producing machine.
 
 ## Python 3.11.9 (64-bit CPython)
 
@@ -49,14 +51,24 @@ combined objective. Selected panel: 26 proteins (`code/v7_plan/panels/panel_mani
 that cancer gives a probability of at least 0.50. Comparison with the same number of most-confident predictions uses
 2,000 bootstrap resamples of patients.
 
-**External refits.** Protein lists frozen. Single-cancer datasets: binary L2-penalized logistic regression (C=1.0)
-on 50 patient-grouped 75:25 splits. Pan-cancer datasets: 50 stratified 75:25 splits; multiclass model refitted with
-its development settings and disease-specific models as binary L2-penalized regressions (C=1.0).
+**External refits.** Protein lists frozen. Single-cancer datasets: binary L2-penalized logistic regression fitted
+by the production runner
+(`revise_plan/external_validation_roadmap/scripts/generic_locked_panel_external_validation_null50.py`; penalty 1.0,
+fixed-step gradient descent with step size 0.05 and 2,500 steps) on 50 patient-grouped 75:25 splits. Pan-cancer
+datasets: 50 stratified 75:25 splits; multiclass model refitted with its development settings and disease-specific
+models as binary L2-penalized scikit-learn regressions (C=1.0).
 
-## Verification
+## Comparing a rerun with the manuscript
 
-- Feature selections, sample partitions, class labels and discrete predictions: exact match.
-- Continuous metrics: absolute tolerance 1e-6.
+First fix the code commit, input CSV content and row order, class labels, sample grouping, panel membership, split
+seed and thresholds. Use seed 52 for the reported partition; other seeds are useful for split sensitivity and may
+give slightly different estimates. Verify the input checksum before running (see `code/data/README.md`).
 
-Verify the input checksum before running anything (see `code/data/README.md`). Record the Python and R versions,
-`pip freeze --all` and the BLAS/LAPACK backend for any run you intend to compare against the published values.
+Small floating-point differences in scores or continuous metrics may occur with a different operating system,
+numerical library, thread count or package build. A changed feature list, split or integer confusion count needs
+investigation; do not assign it to numerical noise without examining the scores near the threshold and the run
+provenance. Figure pixels may also vary with fonts and rendering backends.
+
+For a comparison, record the code commit, source-data checksums, Python and R versions, full `pip freeze --all` or R
+`sessionInfo()`, OS and architecture, BLAS/LAPACK implementation and thread settings, and report the observed
+differences in features, splits, predictions and metrics.
