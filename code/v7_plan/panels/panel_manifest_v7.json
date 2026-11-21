@@ -1,0 +1,61 @@
+{
+ "created": "2026-10-17",
+ "rule": "all panel choices on the 962 development patients only; the 413 internal-test patients are scored once per analysis with these panels",
+ "multiclass": {
+  "panel": "multiclass_26",
+  "candidate_id": 2047,
+  "selection": "highest development 4-fold CV objective among 3,000 candidates (stage1_objective)",
+  "proteins": [
+   "FLT3",
+   "CNTN1",
+   "FCER2",
+   "PRDX6",
+   "LTA4H",
+   "XG",
+   "CCDC80",
+   "CXCL17",
+   "CXCL13",
+   "SLAMF7",
+   "PAEP",
+   "PSPN",
+   "BMP4",
+   "WFDC2",
+   "TRAF2",
+   "KLK13",
+   "GLO1",
+   "GFAP",
+   "CEACAM5",
+   "CGA",
+   "ADAMTS13",
+   "CRTAC1",
+   "TCL1A",
+   "ADAMTS15",
+   "NEFL",
+   "MSMB"
+  ]
+ },
+ "disease_specific": {
+  "selection": "smallest of the top 1-18 development-LASSO-ranked proteins within 0.02 CV AUC and 0.05 CV balanced accuracy of the best (5-fold development CV); floor 2 if the top protein is Bonferroni-significant in >1 cancer",
+  "sizes": {
+   "single_BRC": 12,
+   "single_DLBCL": 12,
+   "single_CVX": 11,
+   "single_CRC": 11,
+   "single_PRC": 11,
+   "single_OVC": 10,
+   "single_ENDC": 7,
+   "single_LUNGC": 7,
+   "single_CLL": 6,
+   "single_GLIOM": 5,
+   "single_MYEL": 3,
+   "single_AML": 2
+  },
+  "distinct_proteins": 81,
+  "union_with_multiclass": 87
+ },
+ "sha256": "f7fc18df6b09e84f69524e4bdc27de16b48e6c6b9009c8ff4947b92fe05eae21",
+ "sources": [
+  "revise_plan/scripts/91_oct_v65_ds_panels_dev_only_reselect_2026-10-16.py",
+  "revise_plan/part_b_multiclass/v11_seed52_lr_l2_wide_compact_sensitivity/tables/stage1_cv_results.csv"
+ ]
+}

@@ -1,98 +1,82 @@
 # Pan-cancer plasma protein panels (12 cancers)
 
-Code and data release for:
+Analysis code for the manuscript:
 
-> **A 25-protein plasma panel discriminates 12 cancer types, and a paired
-> disease-specific panel set confirms them.**
-> Manuscript in preparation for *The FASEB Journal*.
+> **Compact plasma protein panels classify cancer type, and a disease-specific second step trades coverage for
+> accuracy.** Manuscript in preparation.
 
-Assigning which cancer a patient has is a different problem from detecting
-that a cancer is present. This project asks how small a plasma protein panel
-can be and still make that assignment among patients already known to have
-cancer, using Olink Explore 1536 measurements from 1,375 patients across 12
-cancers. A staged search over 3,000 candidate panels returned a locked
-**25-protein multiclass panel** (one-vs-rest AUC 0.956, minimum class recall
-0.619 on held-out patients); 12 one-vs-rest workflows separately returned
-**disease-specific panels** of 2–13 proteins each (mean specificity 0.985 at a
-fixed threshold). With marker membership frozen and coefficients refitted per
-cohort, both panels retained discrimination in 12 independent external
-cohorts (macro AUC 0.963 and 0.946 respectively). Pathway, protein–protein
-interaction, and pQTL–GWAS analyses then ask whether panel membership carries
-biological structure beyond the statistics that selected it.
+Release v1.0.2 holds the code for the panels and analyses reported in the manuscript. Release v1.0.1 holds the code
+of an earlier version of this work (a 25-protein panel) and stays available under its tag and Zenodo version.
 
-This repository holds the analysis code, the processed discovery-cohort
-matrix, and the documentation needed to run it. It does not include the
-manuscript text or high-resolution figures — those stay with the authors
-until the paper is accepted.
+## What the study did
 
-## Citation
+Olink Explore 1536 measured 1,463 plasma proteins in 1,375 patients with 12 cancers (development set 962, internal
+validation set 413). A 26-protein multiclass model names the cancer type (step 1), and the disease-specific model of
+that cancer, with 2 to 12 proteins, accepts the prediction or leaves it undecided (step 2). In the internal
+validation set, step 1 was correct for 74.6% of patients (macro AUC 0.957); step 2 accepted 56.7% of predictions,
+and 90.2% of those were correct. The protein lists were then refitted in 12 single-cancer tissue endpoints and four
+pan-cancer datasets (TCGA, expO, other GDC projects, CCLE), and examined with pathway, tissue-of-origin and genetic
+analyses.
 
-A citation entry will be added on submission/acceptance (see `CITATION.cff`).
-If you use this code before then, please cite the repository URL and note
-the manuscript's working title above.
-
-## Repository layout
+## Layout
 
 ```
-data/                    processed discovery matrix + download instructions for external data
-src/panels/              derivation of both marker systems (Part A single-cancer, Part B multiclass)
-src/external/            refitting frozen marker sets in independent cohorts
-src/enrichment/          pathway over-representation, PPI enrichment, redundancy, Hallmark permutation
-src/genetics/            pQTL–GWAS, colocalisation, SMR/HEIDI (R + supporting Python tooling)
-src/figures/             figure-generation scripts
-docs/                    environment spec, TRIPOD checklist, GWAS source table, panel-search methods
-requirements.txt         pinned Python packages
+code/                     a copy of the project folder with the scripts used for the manuscript
+  data/processed/         the processed U-CAN plasma matrix (included, checksummed; see code/data/README.md)
+  v7_plan/panels/         the locked multiclass and disease-specific panels
+  revise_plan/scripts/    panel search, disease-specific panels, pan-cancer datasets
+  v7_plan/scripts/        internal validation, single-cancer and pan-cancer analyses, biology, genetics (Python, R)
+  v7_plan/figures/scripts/, figurev6/scripts/   figure builders and their shared helpers
+  overleaf-tools/         supplement builder and its helpers
+docs/MANIFEST_v1.0.2.md   which script produces each table and figure (Table S30), run order, full file list
+docs/ENVIRONMENT.md       software versions and fixed analysis settings
+requirements.txt          pinned Python packages
 ```
 
-## Environment
+## Setup
 
-**Python 3.11.9**
+Python 3.11.9:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-**R 4.4.2**, used by `src/genetics/` only (colocalisation, the TwoSampleMR/
-ieugwasr cross-check, and driving the external SMR and PLINK 2 binaries).
-Install into a project-local library:
+R 4.4.2 is needed for the genetic analyses only (coloc, susieR, TwoSampleMR, ieugwasr, dplyr, readr, data.table),
+with the external binaries [SMR 1.3.1](https://yanglab.westlake.edu.cn/software/smr/) and
+[PLINK 2](https://www.cog-genomics.org/plink/2.0/). The R scripts look for packages in `$PROTEOMICS_ROOT/.rlib`
+first.
 
-```r
-dir.create("r_libs")
-install.packages(c("rlang", "coloc", "TwoSampleMR", "ieugwasr", "susieR",
-                    "data.table", "dplyr", "ggplot2", "readr", "tidyr",
-                    "ggrepel", "patchwork", "scales", "RColorBrewer"),
-                  lib = "r_libs")
+Two settings replace the fixed local paths of the original project:
+
+| Setting | Meaning | Default |
+|---|---|---|
+| `PROTEOMICS_ROOT` | folder that holds `data/`, the script folders and the result folders | the `code/` folder |
+| `SMR_DATA_ROOT` | GWAS, pQTL and LD reference files for the genetic analyses (SI Table S19) | `code/smr_data` |
+
+Three figure builders (`fig1_v7_methods.py`, `fig1_v7b_methods.py`, `overleaf-tools/make_fig1_v52_methods.py`) and
+`figurev6/scripts/fig11_panels.py` render SVG with headless Chrome at its default Windows location; edit that path
+if Chrome is installed elsewhere.
+
+## Running
+
+Run the scripts in the order given in `docs/MANIFEST_v1.0.2.md`. Paths resolve from `PROTEOMICS_ROOT`, so the
+working folder does not matter. For example, internal validation of the multiclass model:
+
+```bash
+python code/v7_plan/scripts/B1_multiclass_internal_v7.py
 ```
 
-Scripts in `src/genetics/` set `.libPaths()` to this folder themselves, so no
-further configuration is needed. External binaries:
-[SMR 1.3.1](https://yanglab.westlake.edu.cn/software/smr/) and
-[PLINK 2](https://www.cog-genomics.org/plink/2.0/).
+Each script writes its results under `code/` (or `PROTEOMICS_ROOT`) at the paths named in the manifest. The
+intermediate results of the full project (about 10 GB) and the external datasets are not shipped: the external
+datasets keep their own licences and are downloaded as described in `code/data/README.md`. The split seed is 52
+throughout. Reproduction tolerances are given in `docs/ENVIRONMENT.md`.
 
-Full pinned versions for both languages: `docs/ENVIRONMENT.md`.
+## Citation
 
-## Data
-
-`data/filtered_pancancer_data.csv` (15 MB, checksummed) is the discovery
-cohort. External validation cohorts, GWAS summary statistics, pQTLs, and
-pathway/interaction resources are public but not redistributed here — see
-`data/README.md` for accessions and download links.
-
-## Running the pipeline
-
-```powershell
-# Disease-specific panels (12 one-vs-rest models)
-python src/panels/run_pan_cancer_loop.py --seed 52
-
-# 25-protein multiclass panel (locked reproducer)
-python src/panels/02_may_vRSX_seed52_locked_25_lr_l2_reproducer.py
-```
-
-Reproduction follows the tolerance in `docs/ENVIRONMENT.md`: exact matches
-for feature selections, partitions, and discrete predictions; agreement
-within 1e-6 for continuous metrics, given the pinned environment there.
+Please cite the manuscript and the archived code (Zenodo concept DOI
+[10.5281/zenodo.22986768](https://doi.org/10.5281/zenodo.22986768)); see `CITATION.cff`.
 
 ## Licence
 
-Code: MIT (see `LICENSE`). The discovery-cohort data is CC BY 4.0 from its
-original publication — see `data/README.md`.
+Code: MIT (see `LICENSE`). The processed U-CAN matrix is derived from BioStudies S-BSST935 (CC0); see
+`code/data/README.md`.

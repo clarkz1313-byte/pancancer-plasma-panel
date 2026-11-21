@@ -1,9 +1,14 @@
 cff-version: 1.2.0
-message: "If you use this code, please cite the associated manuscript."
-title: "Analysis code: A 25-protein plasma panel discriminates 12 cancer types, and a paired disease-specific panel set confirms them"
+message: "If you use this code, please cite the associated manuscript and this archived release."
+title: "Analysis code: Compact plasma protein panels classify cancer type, and a disease-specific second step trades coverage for accuracy"
+version: 1.0.2
 authors:
   - family-names: "Le"
     given-names: "Duy"
 repository-code: "https://github.com/clarkz1313-byte/pancancer-plasma-panel"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22986768
+    description: "Zenodo concept DOI (all versions)"
 license: MIT
 type: software
