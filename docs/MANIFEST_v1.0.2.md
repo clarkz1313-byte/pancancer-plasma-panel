@@ -24,7 +24,7 @@ the Supporting Information archive of the manuscript.
 ## Run order
 
 1. **Panels.** `revise_plan/scripts/02_may_v11_seed52_lr_l2_wide_compact_sensitivity.py` (multiclass panel search) and
-   `revise_plan/scripts/91_oct_v65_ds_panels_dev_only_reselect_2026-10-16.py` (disease-specific panels). The locked
+   `revise_plan/scripts/91_oct_v65_ds_panels_dev_only_reselect_2026-10-16.py` (cancer-specific panels). The locked
    panels are shipped in `v7_plan/panels/`, so the later steps can start from them.
 2. **Internal validation.** `B1`, `B3`, `B2`, `B2b` and `B5` in `v7_plan/scripts/`;
    `revise_plan/scripts/92_oct_v65_ds_devonly_downstream_internal_tcga_2026-10-16.py`.

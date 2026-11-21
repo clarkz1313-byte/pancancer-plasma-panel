@@ -35,7 +35,7 @@ scaling           z-scores with the mean and SD of each model's training patient
 screen            Mann-Whitney U, one cancer against the other 11, Bonferroni over 1,463 proteins
 ```
 
-**Disease-specific panels.** L1-penalized logistic regression (C=0.1) of each cancer against the other 11 ranks the
+**Cancer-specific panels.** L1-penalized logistic regression (C=0.1) of each cancer against the other 11 ranks the
 proteins; the top 18 are kept. Panels of the top 1 to 18 are scored by five-fold cross-validation in the development
 set; the smallest panel within 0.02 AUC and 0.05 balanced accuracy of the best is kept (at least two proteins when
 the top protein is significant for another cancer). The final model of each cancer is an unpenalized logistic
@@ -47,7 +47,7 @@ cancers); candidate bank of the 180 highest on 0.45 × cancers significant + 0.3
 ridge multinomial logistic regression (C=0.1, balanced class weights) and scored by four-fold cross-validation on a
 combined objective. Selected panel: 26 proteins (`code/v7_plan/panels/panel_manifest_v7.json`).
 
-**Two-step model.** Step 1 names the most probable cancer; step 2 accepts it when the disease-specific model of
+**Two-step model.** Step 1 names the most probable cancer; step 2 accepts it when the cancer-specific model of
 that cancer gives a probability of at least 0.50. Comparison with the same number of most-confident predictions uses
 2,000 bootstrap resamples of patients.
 
@@ -55,7 +55,7 @@ that cancer gives a probability of at least 0.50. Comparison with the same numbe
 by the production runner
 (`revise_plan/external_validation_roadmap/scripts/generic_locked_panel_external_validation_null50.py`; penalty 1.0,
 fixed-step gradient descent with step size 0.05 and 2,500 steps) on 50 patient-grouped 75:25 splits. Pan-cancer
-datasets: 50 stratified 75:25 splits; multiclass model refitted with its development settings and disease-specific
+datasets: 50 stratified 75:25 splits; multiclass model refitted with its development settings and cancer-specific
 models as binary L2-penalized scikit-learn regressions (C=1.0).
 
 ## Comparing a rerun with the manuscript
