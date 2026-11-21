@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite this archived code release and the associated manuscript when available."
-title: "Analysis code: Compact plasma protein panels classify cancer type, and a disease-specific second step trades coverage for accuracy"
+title: "Analysis code: Two-step machine learning classification of cancer type from the plasma proteome: compact pan-cancer and cancer-specific panels using proximity extension assay"
 version: 1.0.2
-abstract: "Analysis code for a 26-protein multiclass plasma panel, 12 disease-specific panels and a two-step model of cancer type across 12 cancers."
+abstract: "Analysis code for a 26-protein multiclass plasma panel, 12 cancer-specific panels and a two-step model of cancer type across 12 cancers."
 authors:
   - family-names: "Le"
     given-names: "Duy"

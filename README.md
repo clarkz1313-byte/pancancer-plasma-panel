@@ -2,8 +2,8 @@
 
 Analysis code for the manuscript:
 
-> **Compact plasma protein panels classify cancer type, and a disease-specific second step trades coverage for
-> accuracy.** Manuscript in preparation.
+> **Two-step machine learning classification of cancer type from the plasma proteome: compact pan-cancer
+> and cancer-specific panels using proximity extension assay.** Manuscript in preparation.
 
 Release v1.0.2 holds the code for the panels and analyses reported in the manuscript. Releases v1.0.0 and v1.0.1
 hold the code of an earlier version of this work (a 25-protein panel) and stay available under their tags and
@@ -12,8 +12,8 @@ Zenodo versions.
 ## What the study did
 
 Olink Explore 1536 measured 1,463 plasma proteins in 1,375 patients with 12 cancers (development set 962, internal
-validation set 413). A 26-protein multiclass model names the cancer type (step 1), and the disease-specific model of
-that cancer, with 2 to 12 proteins, accepts the prediction or leaves it undecided (step 2). In the internal
+validation set 413). A 26-protein multiclass model names the cancer type (step 1), and the cancer-specific model of
+the predicted type, with 2 to 12 proteins, accepts the prediction or leaves it undecided (step 2). In the internal
 validation set, step 1 was correct for 74.6% of patients (macro AUC 0.957); step 2 accepted 56.7% of predictions,
 and 90.2% of those were correct. The protein lists were then refitted in 12 single-cancer tissue endpoints and four
 pan-cancer datasets (TCGA, expO, other GDC projects, CCLE), and examined with pathway, tissue-of-origin and genetic
@@ -24,8 +24,8 @@ analyses.
 ```
 code/                     a copy of the project folder with the scripts used for the manuscript
   data/processed/         the processed U-CAN plasma matrix (included, checksummed; see code/data/README.md)
-  v7_plan/panels/         the locked multiclass and disease-specific panels
-  revise_plan/scripts/    panel search, disease-specific panels, pan-cancer datasets
+  v7_plan/panels/         the locked multiclass and cancer-specific panels
+  revise_plan/scripts/    panel search, cancer-specific panels, pan-cancer datasets
   revise_plan/external_validation_roadmap/   dataset preparation and the refit runner for the single-cancer datasets
   revise_plan/smr_coloc/  R pipelines of the pQTL-GWAS screen, called by the genetics scripts
   revise_plan/ppi_string/ STRING queries
